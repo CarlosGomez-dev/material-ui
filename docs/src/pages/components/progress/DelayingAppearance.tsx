@@ -10,31 +10,23 @@ export default function DelayingAppearance() {
   const [query, setQuery] = React.useState('idle');
   const timerRef = React.useRef<number>();
 
-  React.useEffect(
-    () => () => {
-      clearTimeout(timerRef.current);
-    },
-    [],
-  );
+  React.useEffect(() => {
+    if (query !== 'idle') {
+      timerRef.current = window.setTimeout(() => setQuery('success'), 2000);
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [query]);
 
   const handleClickLoading = () => {
     setLoading((prevLoading) => !prevLoading);
   };
 
   const handleClickQuery = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
     if (query !== 'idle') {
       setQuery('idle');
       return;
     }
-
     setQuery('progress');
-    timerRef.current = window.setTimeout(() => {
-      setQuery('success');
-    }, 2000);
   };
 
   return (
@@ -51,7 +43,7 @@ export default function DelayingAppearance() {
         </Fade>
       </Box>
       <Button onClick={handleClickLoading} sx={{ m: 2 }}>
-        {loading ? 'Stop loading' : 'Loading'}
+        {loading ? 'Stop loading' : 'Start loading'}
       </Button>
       <Box sx={{ height: 40 }}>
         {query === 'success' ? (
